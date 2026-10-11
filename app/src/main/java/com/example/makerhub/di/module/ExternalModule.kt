@@ -18,7 +18,7 @@ class ExternalModule(private val context: Context) {
 
     @Provides
     @Singleton
-    fun provideGson(): Gson = Gson()
+    fun provideGson(): Gson = DataSourceRepositoryImpl.createGson()
 
     @Provides
     @Singleton

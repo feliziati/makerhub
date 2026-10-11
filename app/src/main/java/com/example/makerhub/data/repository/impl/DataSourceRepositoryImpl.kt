@@ -3,15 +3,17 @@ package com.example.makerhub.data.repository.impl
 import android.content.Context
 import android.util.Log
 import com.example.makerhub.common.IResult
+import com.example.makerhub.data.remote.adapter.StringToIntAdapter
 import com.example.makerhub.data.remote.response.LedgerDataResponse
 import com.example.makerhub.data.repository.DataSourceRepository
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import java.io.InputStream
 import java.io.InputStreamReader
 
 class DataSourceRepositoryImpl(
     private val context: Context,
-    private val gson: Gson = Gson()
+    private val gson: Gson = createGson()
 ) : DataSourceRepository {
 
     private val TAG = DataSourceRepositoryImpl::class.java.simpleName
@@ -19,6 +21,13 @@ class DataSourceRepositoryImpl(
     companion object {
         const val FILENAME_INITIAL_LEDGER = "ledger_initial.json"
         const val FILENAME_DELTA_LEDGER = "ledger_delta.json"
+
+        fun createGson(): Gson {
+            return GsonBuilder()
+                .registerTypeAdapter(Int::class.javaObjectType, StringToIntAdapter())
+                .registerTypeAdapter(Int::class.java, StringToIntAdapter())
+                .create()
+        }
     }
 
     override suspend fun importInitialData(): IResult<LedgerDataResponse> {
