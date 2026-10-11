@@ -1,19 +1,20 @@
 package com.example.makerhub.data.repository.impl
 
 import androidx.lifecycle.LiveData
-import com.example.makerhub.data.local.dao.BorrowerDao
-import com.example.makerhub.data.local.dao.CheckoutDao
-import com.example.makerhub.data.local.dao.ItemDao
+import com.example.makerhub.data.local.AppDatabase
 import com.example.makerhub.data.local.entity.BorrowerEntity
 import com.example.makerhub.data.local.entity.CheckoutEntity
 import com.example.makerhub.data.local.entity.ItemEntity
 import com.example.makerhub.data.repository.LocalRepository
+import javax.inject.Inject
 
-class LocalRepositoryImpl(
-    private val itemDao: ItemDao,
-    private val borrowerDao: BorrowerDao,
-    private val checkoutDao: CheckoutDao
+class LocalRepositoryImpl @Inject constructor(
+    private val db: AppDatabase
 ) : LocalRepository {
+
+    private val itemDao get() = db.itemDao()
+    private val borrowerDao get() = db.borrowerDao()
+    private val checkoutDao get() = db.checkoutDao()
 
     override suspend fun saveItem(item: ItemEntity): Long {
         return itemDao.upsert(item)

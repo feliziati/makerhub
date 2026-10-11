@@ -10,18 +10,18 @@ import com.example.makerhub.data.remote.response.CheckoutResponse
 import com.example.makerhub.data.remote.response.ItemResponse
 import com.example.makerhub.data.repository.DataSourceRepository
 import com.example.makerhub.data.repository.LocalRepository
+import javax.inject.Inject
 import kotlin.collections.forEach
 
-class ImportDataUseCase(
+class ImportDataUseCase @Inject constructor(
     private val dataSource: DataSourceRepository,
     private val local: LocalRepository,
-    private val isInit: Boolean = true
 ) {
     companion object {
         private const val TAG = "ImportDataUseCase"
     }
 
-    suspend operator fun invoke(): IResult<String> {
+    suspend operator fun invoke( isInit: Boolean = true): IResult<String> {
         return try {
             val reportLog = mutableListOf<String>()
 

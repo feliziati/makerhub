@@ -1,6 +1,7 @@
 package com.example.makerhub.data.repository
 
 import com.example.makerhub.common.DateUtils
+import com.example.makerhub.data.local.AppDatabase
 import com.example.makerhub.data.local.dao.BorrowerDao
 import com.example.makerhub.data.local.dao.CheckoutDao
 import com.example.makerhub.data.local.dao.ItemDao
@@ -9,6 +10,7 @@ import com.example.makerhub.data.local.entity.CheckoutEntity
 import com.example.makerhub.data.local.entity.ItemEntity
 import com.example.makerhub.data.repository.impl.LocalRepositoryImpl
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
@@ -16,6 +18,7 @@ import org.junit.Test
 
 class LocalRepositoryTest {
 
+    private lateinit var db: AppDatabase
     private lateinit var itemDao: ItemDao
     private lateinit var borrowerDao: BorrowerDao
     private lateinit var checkoutDao: CheckoutDao
@@ -26,7 +29,12 @@ class LocalRepositoryTest {
         itemDao = mockk(relaxed = true)
         borrowerDao = mockk(relaxed = true)
         checkoutDao = mockk(relaxed = true)
-        repository = LocalRepositoryImpl(itemDao, borrowerDao, checkoutDao)
+        db = mockk(relaxed = true) {
+            every { itemDao() } returns itemDao
+            every { borrowerDao() } returns borrowerDao
+            every { checkoutDao() } returns checkoutDao
+        }
+        repository = LocalRepositoryImpl(db)
     }
 
     @Test

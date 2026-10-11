@@ -2,7 +2,6 @@ package com.example.makerhub.presentation.ui
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -11,12 +10,8 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.makerhub.R
 import com.example.makerhub.common.IResult
-import com.example.makerhub.data.local.AppDatabase
-import com.example.makerhub.data.repository.impl.DataSourceRepositoryImpl
-import com.example.makerhub.data.repository.impl.LocalRepositoryImpl
 import com.example.makerhub.databinding.ActivityMainBinding
-import com.example.makerhub.domain.usecase.ImportDataUseCase
-import com.google.gson.Gson
+import com.example.makerhub.di.component.ComponentHolder
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -24,6 +19,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
 
     private val TAG = MainActivity::class.java.simpleName
+
+    val component = ComponentHolder.getComponent(this)
 
     var report: String = ""
 
@@ -46,13 +43,7 @@ class MainActivity : AppCompatActivity() {
     private fun setupViews() {
         binding.initImportButton.setOnClickListener {
             lifecycleScope.launch {
-                when (val result = ImportDataUseCase(DataSourceRepositoryImpl(this@MainActivity, Gson()),
-                    LocalRepositoryImpl(
-                        AppDatabase.getInstance(this@MainActivity).itemDao(),
-                        AppDatabase.getInstance(this@MainActivity).borrowerDao(),
-                        AppDatabase.getInstance(this@MainActivity).checkoutDao()
-                    )
-                ).invoke()) {
+                when (val result = component.getImportDataUseCase().invoke(true)) {
                     is IResult.Error -> {
                         Toast.makeText(this@MainActivity, "Something went wrong", Toast.LENGTH_SHORT).show()
                     }
@@ -67,14 +58,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.initDeltaButton.setOnClickListener {
             lifecycleScope.launch {
-                when (val result = ImportDataUseCase(DataSourceRepositoryImpl(this@MainActivity, Gson()),
-                    LocalRepositoryImpl(
-                        AppDatabase.getInstance(this@MainActivity).itemDao(),
-                        AppDatabase.getInstance(this@MainActivity).borrowerDao(),
-                        AppDatabase.getInstance(this@MainActivity).checkoutDao()
-                    ),
-                    isInit = false
-                ).invoke()) {
+                when (val result = component.getImportDataUseCase().invoke(false)) {
                     is IResult.Error -> Toast.makeText(this@MainActivity, "Something went wrong", Toast.LENGTH_SHORT).show()
                     is IResult.Success -> {
                         Toast.makeText(this@MainActivity, "Import success. Report logged", Toast.LENGTH_SHORT).show()

@@ -55,8 +55,8 @@ class ImportDataUseCaseTest {
         coEvery { localRepository.saveBorrower(any()) } returns 1L
         coEvery { localRepository.saveCheckout(any()) } returns 1L
 
-        importDataUseCase = ImportDataUseCase(dataSourceRepository, localRepository, isInit = true)
-        val result = importDataUseCase()
+        importDataUseCase = ImportDataUseCase(dataSourceRepository, localRepository)
+        val result = importDataUseCase(isInit = true)
 
         assertTrue(result is IResult.Success)
         coVerify(exactly = 1) { dataSourceRepository.importInitialData() }
@@ -75,8 +75,8 @@ class ImportDataUseCaseTest {
         )
         coEvery { dataSourceRepository.importDeltaData() } returns IResult.Success(ledgerData)
 
-        importDataUseCase = ImportDataUseCase(dataSourceRepository, localRepository, isInit = false)
-        val result = importDataUseCase()
+        importDataUseCase = ImportDataUseCase(dataSourceRepository, localRepository)
+        val result = importDataUseCase(isInit = false)
 
         assertTrue(result is IResult.Success)
         coVerify(exactly = 0) { dataSourceRepository.importInitialData() }
@@ -87,8 +87,8 @@ class ImportDataUseCaseTest {
     fun `invoke when dataSource throws exception returns Error`() = runTest {
         coEvery { dataSourceRepository.importInitialData() } throws RuntimeException("Unexpected crash")
 
-        importDataUseCase = ImportDataUseCase(dataSourceRepository, localRepository, isInit = true)
-        val result = importDataUseCase()
+        importDataUseCase = ImportDataUseCase(dataSourceRepository, localRepository)
+        val result = importDataUseCase(isInit = true)
 
         assertTrue(result is IResult.Error)
         assertEquals("Unexpected crash", (result as IResult.Error).thr.message)
@@ -109,8 +109,8 @@ class ImportDataUseCaseTest {
         coEvery { localRepository.saveItem(match { it.id == 1 }) } returns 1L
         coEvery { localRepository.saveItem(match { it.id == 2 }) } returns -1L // skipped
 
-        importDataUseCase = ImportDataUseCase(dataSourceRepository, localRepository, isInit = true)
-        val result = importDataUseCase()
+        importDataUseCase = ImportDataUseCase(dataSourceRepository, localRepository)
+        val result = importDataUseCase(isInit = true)
 
         assertTrue(result is IResult.Success)
         coVerify(exactly = 1) { localRepository.saveItem(match { it.id == 1 }) }
@@ -166,13 +166,13 @@ class ImportDataUseCaseTest {
         }
 
         // 1. Import initial data
-        val initialUseCase = ImportDataUseCase(dataSourceRepository, localRepository, isInit = true)
-        val initialResult = initialUseCase()
+        val initialUseCase = ImportDataUseCase(dataSourceRepository, localRepository)
+        val initialResult = initialUseCase(isInit = true)
         assertTrue(initialResult is IResult.Success)
 
         // 2. Import delta data (first time)
-        val deltaUseCase1 = ImportDataUseCase(dataSourceRepository, localRepository, isInit = false)
-        val deltaResult1 = deltaUseCase1()
+        val deltaUseCase1 = ImportDataUseCase(dataSourceRepository, localRepository)
+        val deltaResult1 = deltaUseCase1(isInit = false)
         assertTrue(deltaResult1 is IResult.Success)
 
         val itemCountAfterDelta1 = itemsMap.size
@@ -180,8 +180,8 @@ class ImportDataUseCaseTest {
         val itemStatusesAfterDelta1 = itemsMap.mapValues { it.value.status }
 
         // 3. Import delta data (second time)
-        val deltaUseCase2 = ImportDataUseCase(dataSourceRepository, localRepository, isInit = false)
-        val deltaResult2 = deltaUseCase2()
+        val deltaUseCase2 = ImportDataUseCase(dataSourceRepository, localRepository)
+        val deltaResult2 = deltaUseCase2(isInit = false)
         assertTrue(deltaResult2 is IResult.Success)
 
         val itemCountAfterDelta2 = itemsMap.size
@@ -206,8 +206,8 @@ class ImportDataUseCaseTest {
         coEvery { dataSourceRepository.importInitialData() } returns IResult.Success(ledgerData)
         coEvery { localRepository.saveItem(match { it.status == "invalid_status" }) } throws IllegalArgumentException("Invalid status provided: invalid_status")
 
-        importDataUseCase = ImportDataUseCase(dataSourceRepository, localRepository, isInit = true)
-        val result = importDataUseCase()
+        importDataUseCase = ImportDataUseCase(dataSourceRepository, localRepository)
+        val result = importDataUseCase(isInit = true)
 
         assertTrue(result is IResult.Success)
         val report = (result as IResult.Success).data
@@ -226,8 +226,8 @@ class ImportDataUseCaseTest {
         coEvery { dataSourceRepository.importInitialData() } returns IResult.Success(ledgerData)
         coEvery { localRepository.saveCheckout(match { it.status == "cancelled" }) } throws IllegalArgumentException("invalid status provided: cancelled")
 
-        importDataUseCase = ImportDataUseCase(dataSourceRepository, localRepository, isInit = true)
-        val result = importDataUseCase()
+        importDataUseCase = ImportDataUseCase(dataSourceRepository, localRepository)
+        val result = importDataUseCase(isInit = true)
 
         assertTrue(result is IResult.Success)
         val report = (result as IResult.Success).data
@@ -247,8 +247,8 @@ class ImportDataUseCaseTest {
         coEvery { dataSourceRepository.importInitialData() } returns IResult.Success(ledgerData)
         coEvery { localRepository.saveItem(any()) } returns 1L
 
-        importDataUseCase = ImportDataUseCase(dataSourceRepository, localRepository, isInit = true)
-        val result = importDataUseCase()
+        importDataUseCase = ImportDataUseCase(dataSourceRepository, localRepository)
+        val result = importDataUseCase(isInit = true)
 
         assertTrue(result is IResult.Success)
         coVerify(exactly = 4) { localRepository.saveItem(any()) }
@@ -267,8 +267,8 @@ class ImportDataUseCaseTest {
         coEvery { dataSourceRepository.importInitialData() } returns IResult.Success(ledgerData)
         coEvery { localRepository.saveCheckout(any()) } returns 1L
 
-        importDataUseCase = ImportDataUseCase(dataSourceRepository, localRepository, isInit = true)
-        val result = importDataUseCase()
+        importDataUseCase = ImportDataUseCase(dataSourceRepository, localRepository)
+        val result = importDataUseCase(isInit = true)
 
         assertTrue(result is IResult.Success)
         coVerify(exactly = 3) { localRepository.saveCheckout(any()) }
@@ -287,8 +287,8 @@ class ImportDataUseCaseTest {
         val errorMessage = "Cannot transition Item 1 from LOST to AVAILABLE"
         coEvery { localRepository.saveItem(any()) } throws IllegalArgumentException(errorMessage)
 
-        importDataUseCase = ImportDataUseCase(dataSourceRepository, localRepository, isInit = true)
-        val result = importDataUseCase()
+        importDataUseCase = ImportDataUseCase(dataSourceRepository, localRepository)
+        val result = importDataUseCase(isInit = true)
 
         assertTrue(result is IResult.Success)
         val report = (result as IResult.Success).data
