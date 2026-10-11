@@ -36,12 +36,12 @@ fun Item.toEntity(): ItemEntity {
 }
 
 fun parseItemStatus(status: String): ItemStatus {
-    return when (status.lowercase()) {
+    return when (status.lowercase().trim()) {
         "available" -> ItemStatus.AVAILABLE
         "on_loan" -> ItemStatus.ON_LOAN
         "lost" -> ItemStatus.LOST
         "retired" -> ItemStatus.RETIRED
-        else -> ItemStatus.AVAILABLE
+        else -> throw IllegalArgumentException("Invalid status provided: $status")
     }
 }
 

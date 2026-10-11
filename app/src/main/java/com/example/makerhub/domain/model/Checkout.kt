@@ -49,7 +49,7 @@ fun parseCheckoutStatus(status: String): CheckoutStatus {
         "active" -> CheckoutStatus.ACTIVE
         "returned" -> CheckoutStatus.RETURNED
         "lost" -> CheckoutStatus.LOST
-        else -> CheckoutStatus.ACTIVE
+        else -> throw IllegalArgumentException("invalid status provided: $status")
     }
 }
 

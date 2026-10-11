@@ -164,7 +164,6 @@ class ImportDataUseCase(
             if (it.joinedAt.isNullOrEmpty()) missingFields.add("joined_at")
         }
         if (missingFields.isNotEmpty()) throw Exception("Borrower $id has missing fields $missingFields")
-
     }
 
     private fun CheckoutResponse.validateFields() {
@@ -180,4 +179,5 @@ class ImportDataUseCase(
         }
         if (missingFields.isNotEmpty()) throw Exception("Checkout $id has missing fields $missingFields")
     }
+
 }

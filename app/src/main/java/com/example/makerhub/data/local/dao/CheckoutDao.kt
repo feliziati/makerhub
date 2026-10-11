@@ -8,7 +8,9 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import com.example.makerhub.common.isCheckoutStatusValid
 import com.example.makerhub.data.local.entity.CheckoutEntity
+import com.example.makerhub.domain.model.parseCheckoutStatus
 
 @Dao
 interface CheckoutDao {
@@ -20,11 +22,16 @@ interface CheckoutDao {
 
     @Transaction
     suspend fun upsert(checkout: CheckoutEntity): Long {
+        val newStatus = parseCheckoutStatus(checkout.status)
         val existing = getCheckoutById(checkout.id)
         return if (existing == null) {
             insert(checkout)
         } else {
             if (checkout.updatedAt > existing.updatedAt) {
+                val oldStatus = parseCheckoutStatus(existing.status)
+                if (oldStatus != newStatus && !isCheckoutStatusValid(oldStatus, newStatus)) {
+                    throw IllegalArgumentException("Cannot transition Checkout ${checkout.id} from $oldStatus to $newStatus")
+                }
                 update(checkout)
             }
             -1L
@@ -57,6 +64,6 @@ interface CheckoutDao {
     @Query("SELECT * FROM checkouts WHERE borrowerId = :borrowerId")
     fun getCheckoutsByBorrower(borrowerId: String): LiveData<List<CheckoutEntity>>
 
-    @Query("SELECT * FROM checkouts WHERE borrowerId = :itemId")
+    @Query("SELECT * FROM checkouts WHERE itemId = :itemId")
     fun getCheckoutsByItem(itemId: Int): LiveData<List<CheckoutEntity>>
 }
