@@ -1,0 +1,32 @@
+{
+  "source": "MakerHub Marikina desktop ledger v2.3",
+  "exported_at": "2026-10-01T08:00:00+08:00",
+  "export_timezone": "Asia/Manila",
+  "legacy_date_format": "DD/MM/YYYY",
+  "items": [
+    {"id": 101, "name": "Prusa MK4S 3D Printer", "category": "printer", "status": "available", "updated_at": "2026-09-30T14:00:00+08:00"},
+    {"id": 101, "name": "Prusa MK4 3D Printer (needs nozzle)", "category": "printer", "status": "available", "updated_at": "2026-09-29T09:00:00+08:00"},
+    {"id": "104", "name": "Bosch Cordless Drill 18V", "category": "hand_tool", "status": "on_loan", "shelf": "B2", "updated_at": "2026-09-30T10:00:00+08:00"},
+    {"id": 113, "name": "Glowforge Laser Cutter", "category": "cutter", "status": "available", "updated_at": "2026-09-30T16:00:00+08:00"},
+    {"id": 105, "name": "DeWalt Jigsaw", "category": "hand_tool", "status": "available"},
+    {"id": 107, "name": "Rode Wireless Mic Kit", "category": "audio", "status": "retired", "updated_at": 1790726400000},
+    {"id": 111, "name": "Epson EB-X51 Projector", "category": "av", "status": "available", "updated_at": "2026-09-29T11:00:00+08:00"}
+  ],
+  "borrowers": [
+    {"id": "b-007", "name": null, "email": "newmember@example.com", "joined_at": "2026-09-29T10:00:00+08:00"},
+    {"id": " b-003 ", "name": "Aileen Reyes-Garcia", "email": "aileen.reyes@example.com", "joined_at": "2026-03-21T10:00:00+08:00", "updated_at": "2026-09-30T09:00:00+08:00"},
+    {"id": "b-008", "name": "Rico Bautista", "email": "rico.bautista@example.com", "joined_at": "03/09/2026"}
+  ],
+  "checkouts": [
+    {"id": "c-0009", "item_id": 105, "borrower_id": "b-005", "status": "active", "checked_out_at": "2026-09-29T10:00:00+08:00", "due_at": "2026-10-06T18:00:00+08:00", "returned_at": null, "updated_at": "2026-09-29T10:00:00+08:00"},
+    {"id": "c-0009", "item_id": 105, "borrower_id": "b-005", "status": "active", "checked_out_at": "2026-09-29T10:00:00+08:00", "due_at": "2026-10-06T18:00:00+08:00", "returned_at": null, "updated_at": "2026-09-29T10:00:00+08:00"},
+    {"id": "c-0010", "item_id": 112, "borrower_id": "b-006", "status": "active", "checked_out_at": "2026-09-29T11:00:00+08:00", "due_at": "2026-10-06T18:00:00+08:00", "returned_at": null, "updated_at": "2026-09-29T11:00:00+08:00"},
+    {"id": "c-0011", "item_id": 999, "borrower_id": "b-004", "status": "active", "checked_out_at": "2026-09-29T12:00:00+08:00", "due_at": "2026-10-06T18:00:00+08:00", "returned_at": null, "updated_at": "2026-09-29T12:00:00+08:00"},
+    {"id": "c-0006", "status": "returned", "returned_at": "2026-09-17T09:00:00+08:00", "updated_at": "2026-09-30T08:00:00+08:00"},
+    {"id": "c-0001", "status": "returned", "returned_at": "2026-09-28T10:00:00+08:00", "updated_at": "2026-09-28T10:05:00+08:00"},
+    {"id": "c-0003", "status": "Active", "updated_at": "2026-09-30T09:00:00+08:00"},
+    {"id": "c-0099", "status": "returned", "returned_at": "2026-09-30T10:00:00+08:00", "updated_at": "2026-09-30T10:00:00+08:00"},
+    {"id": "c-0012", "item_id": 109, "borrower_id": "b-002", "status": "active", "checked_out_at": "2026-09-30T08:00:00", "due_at": "2026-10-07T18:00:00", "returned_at": null, "updated_at": "2026-09-30T08:00:00"},
+    {"id": "c-0002", "status": "lost", "updated_at": "2026-09-30T12:00:00+08:00"}
+  ]
+}

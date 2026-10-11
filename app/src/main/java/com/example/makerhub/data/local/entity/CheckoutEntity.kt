@@ -1,0 +1,64 @@
+package com.example.makerhub.data.local.entity
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.example.makerhub.common.DateUtils
+
+@Entity(tableName = "checkouts")
+data class CheckoutEntity(
+    @PrimaryKey
+    val id: String,
+    val itemId: Int,
+    val borrowerId: String,
+    val status: String,
+    val checkedOutAt: Long,
+    val dueAt: Long,
+    val returnedAt: Long? = null,
+    val updatedAt: Long
+) {
+    companion object {
+        fun from(
+            id: String,
+            itemId: Int,
+            borrowerId: String,
+            status: String,
+            checkedOutAt: String?,
+            dueAt: String?,
+            returnedAt: String?,
+            updatedAt: String?
+        ): CheckoutEntity {
+            return CheckoutEntity(
+                id = id.trim(),
+                itemId = itemId,
+                borrowerId = borrowerId.trim(),
+                status = status.trim(),
+                checkedOutAt = DateUtils.parseTimestamp(checkedOutAt),
+                dueAt = DateUtils.parseTimestamp(dueAt),
+                returnedAt = DateUtils.parseIsoToMillisOrNull(returnedAt),
+                updatedAt = DateUtils.parseTimestamp(updatedAt)
+            )
+        }
+
+        fun from(
+            id: String,
+            itemId: Int,
+            borrowerId: String,
+            status: String,
+            checkedOutAt: Long,
+            dueAt: Long,
+            returnedAt: Long?,
+            updatedAt: Long
+        ): CheckoutEntity {
+            return CheckoutEntity(
+                id = id.trim(),
+                itemId = itemId,
+                borrowerId = borrowerId.trim(),
+                status = status.trim(),
+                checkedOutAt = checkedOutAt,
+                dueAt = dueAt,
+                returnedAt = returnedAt,
+                updatedAt = updatedAt
+            )
+        }
+    }
+}

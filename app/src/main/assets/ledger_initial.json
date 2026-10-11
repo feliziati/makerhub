@@ -1,0 +1,38 @@
+{
+  "source": "MakerHub Marikina desktop ledger v2.3",
+  "exported_at": "2026-09-28T09:00:00+08:00",
+  "export_timezone": "Asia/Manila",
+  "legacy_date_format": "DD/MM/YYYY",
+  "items": [
+    {"id": 101, "name": "Prusa MK4 3D Printer", "category": "printer", "status": "available", "updated_at": "2026-09-01T10:00:00+08:00"},
+    {"id": 102, "name": "Ender 3 V3 3D Printer", "category": "printer", "status": "on_loan", "updated_at": "2026-09-20T09:30:00+08:00"},
+    {"id": 103, "name": "Brother Sewing Machine", "category": "textile", "status": "available", "updated_at": "2026-09-19T17:00:00+08:00"},
+    {"id": 104, "name": "Bosch Cordless Drill", "category": "hand_tool", "status": "on_loan", "updated_at": "2026-09-22T11:00:00+08:00"},
+    {"id": 105, "name": "DeWalt Jigsaw", "category": "hand_tool", "status": "available", "updated_at": "2026-09-01T10:00:00+08:00"},
+    {"id": 106, "name": "Canon EOS 90D Camera", "category": "camera", "status": "on_loan", "updated_at": "2026-09-25T14:00:00+08:00"},
+    {"id": 107, "name": "Rode Wireless Mic Kit", "category": "audio", "status": "available", "updated_at": "2026-09-01T10:00:00+08:00"},
+    {"id": 108, "name": "Cricut Maker 3", "category": "cutter", "status": "on_loan", "updated_at": "2026-09-26T10:00:00+08:00"},
+    {"id": 109, "name": "Hakko Soldering Station", "category": "electronics", "status": "available", "updated_at": "2026-09-01T10:00:00+08:00"},
+    {"id": 110, "name": "Raspberry Pi 5 Kit", "category": "electronics", "status": "on_loan", "updated_at": "2026-09-27T13:00:00+08:00"},
+    {"id": 111, "name": "Epson EB-X51 Projector", "category": "av", "status": "lost", "updated_at": "2026-09-08T09:00:00+08:00"},
+    {"id": 112, "name": "GBC Laminator", "category": "office", "status": "retired", "updated_at": "2026-08-15T09:00:00+08:00"}
+  ],
+  "borrowers": [
+    {"id": "b-001", "name": "Maria Dizon", "email": "maria.dizon@example.com", "joined_at": "2026-01-12T10:00:00+08:00"},
+    {"id": "b-002", "name": "Jomar Santos", "email": "jomar.santos@example.com", "joined_at": "2026-02-03T10:00:00+08:00"},
+    {"id": "b-003", "name": "Aileen Reyes", "email": "aileen.reyes@example.com", "joined_at": "2026-03-21T10:00:00+08:00"},
+    {"id": "b-004", "name": "Paolo Cruz", "email": "paolo.cruz@example.com", "joined_at": "2026-04-09T10:00:00+08:00"},
+    {"id": "b-005", "name": "Trisha Lim", "email": "trisha.lim@example.com", "joined_at": "2026-05-30T10:00:00+08:00"},
+    {"id": "b-006", "name": "Kevin Tan", "email": "kevin.tan@example.com", "joined_at": "2026-07-14T10:00:00+08:00"}
+  ],
+  "checkouts": [
+    {"id": "c-0001", "item_id": 102, "borrower_id": "b-001", "status": "active", "checked_out_at": "2026-09-20T09:30:00+08:00", "due_at": "2026-09-27T18:00:00+08:00", "returned_at": null, "updated_at": "2026-09-20T09:30:00+08:00"},
+    {"id": "c-0002", "item_id": 104, "borrower_id": "b-002", "status": "active", "checked_out_at": "2026-09-22T11:00:00+08:00", "due_at": "2026-10-06T18:00:00+08:00", "returned_at": null, "updated_at": "2026-09-22T11:00:00+08:00"},
+    {"id": "c-0003", "item_id": 106, "borrower_id": "b-003", "status": "active", "checked_out_at": "2026-09-25T14:00:00+08:00", "due_at": "2026-10-02T18:00:00+08:00", "returned_at": null, "updated_at": "2026-09-25T14:00:00+08:00"},
+    {"id": "c-0004", "item_id": 108, "borrower_id": "b-002", "status": "active", "checked_out_at": "2026-09-26T10:00:00+08:00", "due_at": "2026-10-03T18:00:00+08:00", "returned_at": null, "updated_at": "2026-09-26T10:00:00+08:00"},
+    {"id": "c-0005", "item_id": 110, "borrower_id": "b-004", "status": "active", "checked_out_at": "2026-09-27T13:00:00+08:00", "due_at": "2026-10-04T18:00:00+08:00", "returned_at": null, "updated_at": "2026-09-27T13:00:00+08:00"},
+    {"id": "c-0006", "item_id": 101, "borrower_id": "b-005", "status": "returned", "checked_out_at": "2026-09-10T10:00:00+08:00", "due_at": "2026-09-17T18:00:00+08:00", "returned_at": "2026-09-16T15:20:00+08:00", "updated_at": "2026-09-16T15:20:00+08:00"},
+    {"id": "c-0007", "item_id": 103, "borrower_id": "b-006", "status": "returned", "checked_out_at": "2026-09-12T10:00:00+08:00", "due_at": "2026-09-19T18:00:00+08:00", "returned_at": "2026-09-19T17:00:00+08:00", "updated_at": "2026-09-19T17:00:00+08:00"},
+    {"id": "c-0008", "item_id": 111, "borrower_id": "b-001", "status": "lost", "checked_out_at": "2026-08-30T10:00:00+08:00", "due_at": "2026-09-06T18:00:00+08:00", "returned_at": null, "updated_at": "2026-09-08T09:00:00+08:00"}
+  ]
+}

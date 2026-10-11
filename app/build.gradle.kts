@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -18,6 +19,12 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    sourceSets {
+        getByName("main") {
+            resources.directories.add("src/main/java")
+        }
+    }
+
     buildFeatures {
         viewBinding = true
     }
@@ -26,7 +33,7 @@ android {
         release {
             optimization {
                 enable = true
-                packageScope = setOf("androidx.**", "kotlin.**", "kotlinx.**")
+                packageScope = setOf("androidx.**", "kotlin.**", "kotlinx.**", "com.google.**")
             }
         }
     }
@@ -47,10 +54,11 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-    annotationProcessor(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
     testImplementation(libs.androidx.room.testing)
     implementation(libs.dagger)
-    annotationProcessor(libs.dagger.compiler) // or ksp(libs.dagger.compiler)
+    ksp(libs.dagger.compiler)
+    implementation(libs.gson)
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     androidTestImplementation(libs.androidx.espresso.core)

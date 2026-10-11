@@ -5,15 +5,34 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".presentation.ui.MainActivity">
 
-    <TextView
+    <Button
+        android:id="@+id/init_import_button"
+        android:text="Import initial data"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/init_delta_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Import delta data"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/init_import_button" />
+
+    <Button
+        android:id="@+id/view_report_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View report"
+        android:enabled="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/init_delta_button" />
 </androidx.constraintlayout.widget.ConstraintLayout>
