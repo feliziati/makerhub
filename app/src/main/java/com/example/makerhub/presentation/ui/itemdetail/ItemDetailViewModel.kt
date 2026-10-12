@@ -13,6 +13,7 @@ import com.example.makerhub.domain.model.Checkout
 import com.example.makerhub.domain.model.Item
 import com.example.makerhub.domain.usecase.CheckoutItemUseCase
 import com.example.makerhub.domain.usecase.GetItemDetailUseCase
+import com.example.makerhub.domain.usecase.LostItemUseCase
 import com.example.makerhub.domain.usecase.ReturnItemUseCase
 import kotlinx.coroutines.launch
 
@@ -20,7 +21,8 @@ class ItemDetailViewModel(
     private val itemId: Int,
     private val getItemDetailUseCase: GetItemDetailUseCase,
     private val checkoutItemUseCase: CheckoutItemUseCase,
-    private val returnItemUseCase: ReturnItemUseCase
+    private val returnItemUseCase: ReturnItemUseCase,
+    private val lostItemUseCase: LostItemUseCase
 ) : ViewModel() {
 
     val itemLiveData: LiveData<Item?> = getItemDetailUseCase.getItem(itemId)
@@ -39,8 +41,13 @@ class ItemDetailViewModel(
         viewModelScope.launch {
             itemLiveData.value?.let {
                 when (val result = checkoutItemUseCase(it, borrower)) {
-                    is IResult.Success -> _actionResult.value = IResult.Success("Item checked out successfully")
-                    is IResult.Error -> _actionResult.value = IResult.Error(result.thr, errorMessage = result.thr.message  ?: "Failed to checkout item")
+                    is IResult.Success -> _actionResult.value =
+                        IResult.Success("Item checked out successfully")
+
+                    is IResult.Error -> _actionResult.value = IResult.Error(
+                        result.thr,
+                        errorMessage = result.thr.message ?: "Failed to checkout item"
+                    )
                 }
             }
         }
@@ -48,11 +55,33 @@ class ItemDetailViewModel(
 
     fun returnItem() {
         viewModelScope.launch {
-            val activeCheckout = checkoutsLiveData.value?.firstOrNull { it.status == CheckoutStatus.ACTIVE }
+            val activeCheckout =
+                checkoutsLiveData.value?.firstOrNull { it.status == CheckoutStatus.ACTIVE }
             if (activeCheckout != null) {
                 when (val result = returnItemUseCase(activeCheckout)) {
-                    is IResult.Success -> _actionResult.value = IResult.Success("Item returned successfully")
-                    is IResult.Error -> _actionResult.value = IResult.Error(result.thr, errorMessage = result.thr.message ?: "Failed to return item")
+                    is IResult.Success -> _actionResult.value =
+                        IResult.Success("Item returned successfully")
+
+                    is IResult.Error -> _actionResult.value = IResult.Error(
+                        result.thr,
+                        errorMessage = result.thr.message ?: "Failed to return item"
+                    )
+                }
+            }
+        }
+    }
+
+    fun markAsLost() {
+        viewModelScope.launch {
+            val activeCheckout =
+                checkoutsLiveData.value?.firstOrNull { it.status == CheckoutStatus.ACTIVE } ?: return@launch
+            itemLiveData.value?.let {
+                when (val result = lostItemUseCase(it, activeCheckout)) {
+                    is IResult.Error -> _actionResult.value = IResult.Error(
+                        result.thr,
+                        errorMessage = result.thr.message ?: "Failed to mark item as lost"
+                    )
+                    is IResult.Success -> _actionResult.value = IResult.Success("Item marked as lost")
                 }
             }
         }
@@ -63,7 +92,13 @@ class ItemDetailViewModel(
         private val component: AppComponent
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return ItemDetailViewModel(itemId, component.getItemDetailUseCase(), component.getCheckoutItemUseCase(), component.getReturnItemUseCase()) as T
+            return ItemDetailViewModel(
+                itemId,
+                component.getItemDetailUseCase(),
+                component.getCheckoutItemUseCase(),
+                component.getReturnItemUseCase(),
+                component.getLostItemUseCase()
+            ) as T
         }
     }
 }

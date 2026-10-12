@@ -5,14 +5,17 @@ import com.example.makerhub.data.repository.LocalRepository
 import com.example.makerhub.domain.usecase.GetItemListUseCase
 import com.example.makerhub.domain.usecase.ImportDataUseCase
 import com.example.makerhub.domain.usecase.GetItemDetailUseCase
+import com.example.makerhub.domain.usecase.LostItemUseCase
 import com.example.makerhub.domain.usecase.ReturnItemUseCase
 import dagger.Module
 import dagger.Provides
+import javax.inject.Singleton
 
 @Module
 class UseCaseModule {
 
     @Provides
+    @Singleton
     fun provideImportDataUseCase(
         dataSource: DataSourceRepository,
         local: LocalRepository
@@ -37,5 +40,10 @@ class UseCaseModule {
     @Provides
     fun provideReturnItemUseCase(localRepository: LocalRepository): ReturnItemUseCase {
         return ReturnItemUseCase(localRepository)
+    }
+
+    @Provides
+    fun provideLostItemUseCase(localRepository: LocalRepository): LostItemUseCase {
+        return LostItemUseCase(localRepository)
     }
 }

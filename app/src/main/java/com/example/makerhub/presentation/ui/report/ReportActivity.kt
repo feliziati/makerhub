@@ -15,16 +15,13 @@ class ReportActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         binding = ActivityReportBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-
         val reportLog = ComponentHolder.getComponent(this).getImportDataUseCase().getReport()
-        binding.reportLog.text = reportLog
+        if (reportLog.isEmpty()) {
+            binding.reportLog.text = "No import report available yet. Run an import from the main screen."
+        } else {
+            binding.reportLog.text = reportLog
+        }
     }
 }

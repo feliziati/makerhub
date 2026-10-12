@@ -1,5 +1,9 @@
 package com.example.makerhub.common
 
+import android.util.Log
+
+val TAG = "StateMachine"
+
 enum class CheckoutStatus {
     ACTIVE, RETURNED, LOST
 }
@@ -9,6 +13,7 @@ enum class ItemStatus {
 }
 
 fun isItemStatusValid(oldStatus: ItemStatus, newStatus: ItemStatus): Boolean {
+    Log.d(TAG, "isItemStatusValid(): oldStatus=$oldStatus, newStatus=$newStatus" )
     return oldStatus.name != newStatus.name && when(oldStatus) {
         ItemStatus.AVAILABLE -> newStatus == ItemStatus.ON_LOAN || newStatus == ItemStatus.RETIRED
         ItemStatus.ON_LOAN -> newStatus == ItemStatus.AVAILABLE || newStatus == ItemStatus.LOST || newStatus == ItemStatus.RETIRED
@@ -18,6 +23,7 @@ fun isItemStatusValid(oldStatus: ItemStatus, newStatus: ItemStatus): Boolean {
 }
 
 fun isCheckoutStatusValid(oldStatus: CheckoutStatus, newStatus: CheckoutStatus): Boolean {
+    Log.d(TAG, "isCheckoutStatusValid(): oldStatus=$oldStatus, newStatus=$newStatus" )
     return oldStatus.name != newStatus.name && when (oldStatus) {
         CheckoutStatus.ACTIVE -> newStatus == CheckoutStatus.RETURNED || newStatus == CheckoutStatus.LOST
         CheckoutStatus.RETURNED -> false

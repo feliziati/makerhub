@@ -75,6 +75,7 @@ class ItemDetailActivity : AppCompatActivity() {
         checkoutHistoryAdapter = CheckoutHistoryAdapter()
         binding.rvCheckoutHistory.layoutManager = LinearLayoutManager(this)
         binding.rvCheckoutHistory.adapter = checkoutHistoryAdapter
+        binding.rvCheckoutHistory.isNestedScrollingEnabled = false
     }
 
     private fun setupButtons(item: Item) {
@@ -115,7 +116,7 @@ class ItemDetailActivity : AppCompatActivity() {
             .setTitle("Mark as Lost")
             .setMessage("Are you sure you want to mark this item as lost?")
             .setPositiveButton("Yes") { _, _ ->
-                Toast.makeText(this, "Action not supported", Toast.LENGTH_SHORT).show()
+                viewModel.markAsLost()
             }
             .setNegativeButton("No", null)
             .show()
