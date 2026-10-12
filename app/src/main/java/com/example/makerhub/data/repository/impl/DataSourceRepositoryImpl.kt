@@ -24,8 +24,6 @@ class DataSourceRepositoryImpl(
 
         fun createGson(): Gson {
             return GsonBuilder()
-                .registerTypeAdapter(Int::class.javaObjectType, StringToIntAdapter())
-                .registerTypeAdapter(Int::class.java, StringToIntAdapter())
                 .create()
         }
     }

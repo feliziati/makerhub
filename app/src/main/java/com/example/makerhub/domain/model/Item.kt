@@ -1,5 +1,6 @@
 package com.example.makerhub.domain.model
 
+import com.example.makerhub.common.ItemStatus
 import com.example.makerhub.data.local.entity.ItemEntity
 
 data class Item(
@@ -9,10 +10,6 @@ data class Item(
     val status: ItemStatus,
     val updatedAt: Long
 )
-
-enum class ItemStatus {
-    AVAILABLE, ON_LOAN, LOST, RETIRED
-}
 
 fun ItemEntity.toItem(): Item {
     val itemStatus = parseItemStatus(status)

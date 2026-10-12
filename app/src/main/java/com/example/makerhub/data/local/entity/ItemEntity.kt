@@ -22,9 +22,9 @@ data class ItemEntity(
             }
             return ItemEntity(
                 id = parsedId,
-                name = name.trim(),
-                category = category.trim(),
-                status = status.trim(),
+                name = name,
+                category = category,
+                status = status,
                 updatedAt = DateUtils.parseTimestamp(updatedAt)
             )
         }
@@ -32,9 +32,9 @@ data class ItemEntity(
         fun from(id: Int, name: String, category: String, status: String, updatedAt: Long): ItemEntity {
             return ItemEntity(
                 id = id,
-                name = name.trim(),
-                category = category.trim(),
-                status = status.trim(),
+                name = name,
+                category = category,
+                status = status,
                 updatedAt = updatedAt
             )
         }

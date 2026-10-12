@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_item_list"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".presentation.ui.itemlist.ItemListActivity">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        app:title="@string/title_items_list"
+        app:titleTextColor="?attr/colorOnPrimary"
+        app:navigationIcon="?attr/homeAsUpIndicator"
+        app:navigationIconTint="?attr/colorOnPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Counts per status bar -->
+    <HorizontalScrollView
+        android:id="@+id/counts_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="8dp"
+        android:clipToPadding="false"
+        android:scrollbars="none"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/status_chip_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:singleSelection="true"
+            app:selectionRequired="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_all"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                tools:text="All: 0" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_available"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Available: 0" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_on_loan"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="On Loan: 0" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_lost"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Lost: 0" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_retired"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Retired: 0" />
+
+        </com.google.android.material.chip.ChipGroup>
+    </HorizontalScrollView>
+
+    <TextView
+        android:id="@+id/text_filter_summary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="4dp"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:textColor="?android:attr/textColorSecondary"
+        app:layout_constraintTop_toBottomOf="@+id/counts_scroll_view"
+        tools:text="Showing 10 items (All)" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/items_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="12dp"
+        android:clipToPadding="false"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_filter_summary"
+        tools:listitem="@layout/item_list_entry" />
+
+    <TextView
+        android:id="@+id/empty_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/no_items_found"
+        android:textSize="16sp"
+        android:textColor="?android:attr/textColorSecondary"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_filter_summary" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,7 +5,11 @@ import com.example.makerhub.data.repository.LocalRepository
 import com.example.makerhub.di.module.ExternalModule
 import com.example.makerhub.di.module.RepositoryModule
 import com.example.makerhub.di.module.UseCaseModule
+import com.example.makerhub.domain.usecase.CheckoutItemUseCase
+import com.example.makerhub.domain.usecase.GetItemListUseCase
 import com.example.makerhub.domain.usecase.ImportDataUseCase
+import com.example.makerhub.domain.usecase.GetItemDetailUseCase
+import com.example.makerhub.domain.usecase.ReturnItemUseCase
 import dagger.Component
 import javax.inject.Singleton
 
@@ -19,6 +23,11 @@ import javax.inject.Singleton
 )
 interface AppComponent {
     fun getImportDataUseCase(): ImportDataUseCase
+    fun getGetItemsUseCase(): GetItemListUseCase
+    fun getItemDetailUseCase(): GetItemDetailUseCase
+    fun getCheckoutItemUseCase(): CheckoutItemUseCase
+    fun getReturnItemUseCase(): ReturnItemUseCase
+
     fun getLocalRepository(): LocalRepository
     fun getDataSourceRepository(): DataSourceRepository
 }

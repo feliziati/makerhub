@@ -5,6 +5,11 @@ import com.example.makerhub.data.local.AppDatabase
 import com.example.makerhub.data.local.entity.BorrowerEntity
 import com.example.makerhub.data.local.entity.CheckoutEntity
 import com.example.makerhub.data.local.entity.ItemEntity
+import com.example.makerhub.data.remote.response.BorrowerResponse
+import com.example.makerhub.data.remote.response.CheckoutResponse
+import com.example.makerhub.data.remote.response.ItemResponse
+import com.example.makerhub.data.remote.response.validateFields
+import com.example.makerhub.data.remote.response.validatePartialFields
 import com.example.makerhub.data.repository.LocalRepository
 import javax.inject.Inject
 
@@ -20,12 +25,36 @@ class LocalRepositoryImpl @Inject constructor(
         return itemDao.upsert(item)
     }
 
+    override suspend fun saveItem(itemResponse: ItemResponse): Long {
+        itemResponse.validateFields()
+        val item = ItemEntity.from(
+            itemResponse.id,
+            itemResponse.name!!,
+            itemResponse.category!!,
+            itemResponse.status!!,
+            itemResponse.updatedAt!!
+        )
+        return saveItem(item)
+    }
+
     override suspend fun saveItems(items: List<ItemEntity>): LongArray {
         return itemDao.insertAll(items)
     }
 
     override suspend fun saveBorrower(borrower: BorrowerEntity): Long {
         return borrowerDao.upsert(borrower)
+    }
+
+    override suspend fun saveBorrower(borrowerResponse: BorrowerResponse): Long {
+        borrowerResponse.validateFields()
+        val borrower = BorrowerEntity.from(
+            borrowerResponse.id ?: "",
+            borrowerResponse.name ?: "",
+            borrowerResponse.email ?: "",
+            borrowerResponse.joinedAt ?: "",
+            borrowerResponse.updatedAt
+        )
+        return saveBorrower(borrower)
     }
 
     override suspend fun saveBorrowers(borrowers: List<BorrowerEntity>): LongArray {
@@ -35,6 +64,28 @@ class LocalRepositoryImpl @Inject constructor(
     override suspend fun saveCheckout(checkout: CheckoutEntity): Long {
         return checkoutDao.upsert(checkout)
     }
+
+    override suspend fun saveCheckout(checkoutResponse: CheckoutResponse): Long {
+        val existing = getCheckoutById(checkoutResponse.id!!)
+        return if (existing == null) {
+            checkoutResponse.validateFields()
+            val entity = CheckoutEntity.from(
+                checkoutResponse.id,
+                checkoutResponse.itemId ?: -1,
+                checkoutResponse.borrowerId ?: "",
+                checkoutResponse.status ?: "",
+                checkoutResponse.checkedOutAt ?:"",
+                checkoutResponse.dueAt ?: "",
+                checkoutResponse.returnedAt,
+                checkoutResponse.updatedAt ?: ""
+            )
+            checkoutDao.upsert(entity)
+        } else {
+            checkoutResponse.validatePartialFields()
+            checkoutDao.applyDelta(checkoutResponse)
+        }
+    }
+
 
     override suspend fun saveCheckouts(checkouts: List<CheckoutEntity>): LongArray {
         return checkoutDao.insertAll(checkouts)
@@ -65,4 +116,6 @@ class LocalRepositoryImpl @Inject constructor(
     override fun getCheckoutsByBorrower(borrowerId: String): LiveData<List<CheckoutEntity>> = checkoutDao.getCheckoutsByBorrower(borrowerId)
 
     override fun getCheckoutsByItem(itemId: Int): LiveData<List<CheckoutEntity>> = checkoutDao.getCheckoutsByItem(itemId)
+
+    override suspend fun getCheckoutsByItemSync(itemId: Int): List<CheckoutEntity> = checkoutDao.getCheckoutsByItemSync(itemId)
 }

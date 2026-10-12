@@ -1,6 +1,8 @@
 package com.example.makerhub.domain.model
 
+import com.example.makerhub.common.CheckoutStatus
 import com.example.makerhub.common.DateUtils
+import com.example.makerhub.common.ItemStatus
 import com.example.makerhub.data.local.entity.BorrowerEntity
 import com.example.makerhub.data.local.entity.CheckoutEntity
 import com.example.makerhub.data.local.entity.ItemEntity

@@ -16,19 +16,19 @@ data class BorrowerEntity(
     companion object {
         fun from(id: String, name: String, email: String, joinedAt: String?, updatedAt: String? = null): BorrowerEntity {
             return BorrowerEntity(
-                id = id.trim(),
-                name = name.trim(),
-                email = email.trim(),
+                id = id,
+                name = name,
+                email = email,
                 joinedAt = DateUtils.parseTimestamp(joinedAt),
-                updatedAt = DateUtils.parseIsoToMillisOrNull(updatedAt)
+                updatedAt = DateUtils.parseTimestampOrNull(updatedAt)
             )
         }
 
         fun from(id: String, name: String, email: String, joinedAt: Long, updatedAt: Long? = null): BorrowerEntity {
             return BorrowerEntity(
-                id = id.trim(),
-                name = name.trim(),
-                email = email.trim(),
+                id = id,
+                name = name,
+                email = email,
                 joinedAt = joinedAt,
                 updatedAt = updatedAt
             )

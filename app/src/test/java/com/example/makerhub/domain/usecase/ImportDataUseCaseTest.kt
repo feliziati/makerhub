@@ -51,9 +51,9 @@ class ImportDataUseCaseTest {
             )
         )
         coEvery { dataSourceRepository.importInitialData() } returns IResult.Success(ledgerData)
-        coEvery { localRepository.saveItem(any()) } returns 1L
-        coEvery { localRepository.saveBorrower(any()) } returns 1L
-        coEvery { localRepository.saveCheckout(any()) } returns 1L
+        coEvery { localRepository.saveItem(any<ItemResponse>()) } returns 1L
+        coEvery { localRepository.saveBorrower(any<BorrowerResponse>()) } returns 1L
+        coEvery { localRepository.saveCheckout(any<CheckoutResponse>()) } returns 1L
 
         importDataUseCase = ImportDataUseCase(dataSourceRepository, localRepository)
         val result = importDataUseCase(isInit = true)
@@ -61,9 +61,9 @@ class ImportDataUseCaseTest {
         assertTrue(result is IResult.Success)
         coVerify(exactly = 1) { dataSourceRepository.importInitialData() }
         coVerify(exactly = 0) { dataSourceRepository.importDeltaData() }
-        coVerify(exactly = 1) { localRepository.saveItem(any()) }
-        coVerify(exactly = 1) { localRepository.saveBorrower(any()) }
-        coVerify(exactly = 1) { localRepository.saveCheckout(any()) }
+        coVerify(exactly = 1) { localRepository.saveItem(any<ItemResponse>()) }
+        coVerify(exactly = 1) { localRepository.saveBorrower(any<BorrowerResponse>()) }
+        coVerify(exactly = 1) { localRepository.saveCheckout(any<CheckoutResponse>()) }
     }
 
     @Test
@@ -106,15 +106,15 @@ class ImportDataUseCaseTest {
             checkouts = emptyList()
         )
         coEvery { dataSourceRepository.importInitialData() } returns IResult.Success(ledgerData)
-        coEvery { localRepository.saveItem(match { it.id == 1 }) } returns 1L
-        coEvery { localRepository.saveItem(match { it.id == 2 }) } returns -1L // skipped
+        coEvery { localRepository.saveItem(match<ItemResponse> { it.id == 1 }) } returns 1L
+        coEvery { localRepository.saveItem(match<ItemResponse> { it.id == 2 }) } returns -1L // skipped
 
         importDataUseCase = ImportDataUseCase(dataSourceRepository, localRepository)
         val result = importDataUseCase(isInit = true)
 
         assertTrue(result is IResult.Success)
-        coVerify(exactly = 1) { localRepository.saveItem(match { it.id == 1 }) }
-        coVerify(exactly = 1) { localRepository.saveItem(match { it.id == 2 }) }
+        coVerify(exactly = 1) { localRepository.saveItem(match<ItemResponse> { it.id == 1 }) }
+        coVerify(exactly = 1) { localRepository.saveItem(match<ItemResponse> { it.id == 2 }) }
     }
 
     @Test
@@ -145,23 +145,23 @@ class ImportDataUseCaseTest {
         coEvery { dataSourceRepository.importInitialData() } returns IResult.Success(initialLedger)
         coEvery { dataSourceRepository.importDeltaData() } returns IResult.Success(deltaLedger)
 
-        val itemsMap = mutableMapOf<Int, com.example.makerhub.data.local.entity.ItemEntity>()
-        val checkoutsMap = mutableMapOf<String, com.example.makerhub.data.local.entity.CheckoutEntity>()
-        val borrowersMap = mutableMapOf<String, com.example.makerhub.data.local.entity.BorrowerEntity>()
+        val itemsMap = mutableMapOf<Int, String>()
+        val checkoutsMap = mutableMapOf<String, String>()
+        val borrowersMap = mutableMapOf<String, String>()
 
-        coEvery { localRepository.saveItem(any()) } answers {
-            val item = firstArg<com.example.makerhub.data.local.entity.ItemEntity>()
-            itemsMap[item.id] = item
+        coEvery { localRepository.saveItem(any<ItemResponse>()) } answers {
+            val item = firstArg<ItemResponse>()
+            item.id?.let { itemsMap[it] = item.status.orEmpty() }
             1L
         }
-        coEvery { localRepository.saveBorrower(any()) } answers {
-            val b = firstArg<com.example.makerhub.data.local.entity.BorrowerEntity>()
-            borrowersMap[b.id] = b
+        coEvery { localRepository.saveBorrower(any<BorrowerResponse>()) } answers {
+            val b = firstArg<BorrowerResponse>()
+            b.id?.let { borrowersMap[it] = b.name.orEmpty() }
             1L
         }
-        coEvery { localRepository.saveCheckout(any()) } answers {
-            val c = firstArg<com.example.makerhub.data.local.entity.CheckoutEntity>()
-            checkoutsMap[c.id] = c
+        coEvery { localRepository.saveCheckout(any<CheckoutResponse>()) } answers {
+            val c = firstArg<CheckoutResponse>()
+            c.id?.let { checkoutsMap[it] = c.status.orEmpty() }
             1L
         }
 
@@ -177,7 +177,7 @@ class ImportDataUseCaseTest {
 
         val itemCountAfterDelta1 = itemsMap.size
         val checkoutCountAfterDelta1 = checkoutsMap.size
-        val itemStatusesAfterDelta1 = itemsMap.mapValues { it.value.status }
+        val itemStatusesAfterDelta1 = itemsMap.toMap()
 
         // 3. Import delta data (second time)
         val deltaUseCase2 = ImportDataUseCase(dataSourceRepository, localRepository)
@@ -186,7 +186,7 @@ class ImportDataUseCaseTest {
 
         val itemCountAfterDelta2 = itemsMap.size
         val checkoutCountAfterDelta2 = checkoutsMap.size
-        val itemStatusesAfterDelta2 = itemsMap.mapValues { it.value.status }
+        val itemStatusesAfterDelta2 = itemsMap.toMap()
 
         // 4. Assert true that Item count, checkout count, and item status is identical after the second delta import
         assertEquals(itemCountAfterDelta1, itemCountAfterDelta2)
@@ -204,7 +204,7 @@ class ImportDataUseCaseTest {
             checkouts = emptyList()
         )
         coEvery { dataSourceRepository.importInitialData() } returns IResult.Success(ledgerData)
-        coEvery { localRepository.saveItem(match { it.status == "invalid_status" }) } throws IllegalArgumentException("Invalid status provided: invalid_status")
+        coEvery { localRepository.saveItem(match<ItemResponse> { it.status == "invalid_status" }) } throws IllegalArgumentException("Invalid status provided: invalid_status")
 
         importDataUseCase = ImportDataUseCase(dataSourceRepository, localRepository)
         val result = importDataUseCase(isInit = true)
@@ -224,7 +224,7 @@ class ImportDataUseCaseTest {
             )
         )
         coEvery { dataSourceRepository.importInitialData() } returns IResult.Success(ledgerData)
-        coEvery { localRepository.saveCheckout(match { it.status == "cancelled" }) } throws IllegalArgumentException("invalid status provided: cancelled")
+        coEvery { localRepository.saveCheckout(match<CheckoutResponse> { it.status == "cancelled" }) } throws IllegalArgumentException("invalid status provided: cancelled")
 
         importDataUseCase = ImportDataUseCase(dataSourceRepository, localRepository)
         val result = importDataUseCase(isInit = true)
@@ -245,13 +245,13 @@ class ImportDataUseCaseTest {
             checkouts = emptyList()
         )
         coEvery { dataSourceRepository.importInitialData() } returns IResult.Success(ledgerData)
-        coEvery { localRepository.saveItem(any()) } returns 1L
+        coEvery { localRepository.saveItem(any<ItemResponse>()) } returns 1L
 
         importDataUseCase = ImportDataUseCase(dataSourceRepository, localRepository)
         val result = importDataUseCase(isInit = true)
 
         assertTrue(result is IResult.Success)
-        coVerify(exactly = 4) { localRepository.saveItem(any()) }
+        coVerify(exactly = 4) { localRepository.saveItem(any<ItemResponse>()) }
     }
 
     @Test
@@ -265,13 +265,13 @@ class ImportDataUseCaseTest {
             }
         )
         coEvery { dataSourceRepository.importInitialData() } returns IResult.Success(ledgerData)
-        coEvery { localRepository.saveCheckout(any()) } returns 1L
+        coEvery { localRepository.saveCheckout(any<CheckoutResponse>()) } returns 1L
 
         importDataUseCase = ImportDataUseCase(dataSourceRepository, localRepository)
         val result = importDataUseCase(isInit = true)
 
         assertTrue(result is IResult.Success)
-        coVerify(exactly = 3) { localRepository.saveCheckout(any()) }
+        coVerify(exactly = 3) { localRepository.saveCheckout(any<CheckoutResponse>()) }
     }
 
     @Test
@@ -285,7 +285,7 @@ class ImportDataUseCaseTest {
         )
         coEvery { dataSourceRepository.importInitialData() } returns IResult.Success(ledgerData)
         val errorMessage = "Cannot transition Item 1 from LOST to AVAILABLE"
-        coEvery { localRepository.saveItem(any()) } throws IllegalArgumentException(errorMessage)
+        coEvery { localRepository.saveItem(any<ItemResponse>()) } throws IllegalArgumentException(errorMessage)
 
         importDataUseCase = ImportDataUseCase(dataSourceRepository, localRepository)
         val result = importDataUseCase(isInit = true)

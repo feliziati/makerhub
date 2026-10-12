@@ -13,15 +13,25 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MakerHub">
         <activity
-            android:name=".presentation.ui.MainActivity"
+            android:name=".presentation.ui.itemlist.ItemListActivity"
             android:exported="true"
+            android:label="@string/title_items_list"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".presentation.ui.itemdetail.ItemDetailActivity"
+            android:exported="false"
+            android:label="@string/title_item_detail"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".presentation.ui.report.ReportActivity"
+            android:exported="false"
+            android:label="@string/title_activity_report"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>

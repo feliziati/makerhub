@@ -22,43 +22,23 @@ data class CheckoutEntity(
             itemId: Int,
             borrowerId: String,
             status: String,
-            checkedOutAt: String?,
-            dueAt: String?,
+            checkedOutAt: String,
+            dueAt: String,
             returnedAt: String?,
-            updatedAt: String?
+            updatedAt: String
         ): CheckoutEntity {
             return CheckoutEntity(
-                id = id.trim(),
+                id = id,
                 itemId = itemId,
-                borrowerId = borrowerId.trim(),
-                status = status.trim(),
+                borrowerId = borrowerId,
+                status = status,
                 checkedOutAt = DateUtils.parseTimestamp(checkedOutAt),
                 dueAt = DateUtils.parseTimestamp(dueAt),
-                returnedAt = DateUtils.parseIsoToMillisOrNull(returnedAt),
+                returnedAt = DateUtils.parseTimestampOrNull(returnedAt),
                 updatedAt = DateUtils.parseTimestamp(updatedAt)
-            )
-        }
-
-        fun from(
-            id: String,
-            itemId: Int,
-            borrowerId: String,
-            status: String,
-            checkedOutAt: Long,
-            dueAt: Long,
-            returnedAt: Long?,
-            updatedAt: Long
-        ): CheckoutEntity {
-            return CheckoutEntity(
-                id = id.trim(),
-                itemId = itemId,
-                borrowerId = borrowerId.trim(),
-                status = status.trim(),
-                checkedOutAt = checkedOutAt,
-                dueAt = dueAt,
-                returnedAt = returnedAt,
-                updatedAt = updatedAt
             )
         }
     }
 }
+
+

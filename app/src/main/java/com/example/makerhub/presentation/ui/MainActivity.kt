@@ -1,6 +1,6 @@
 package com.example.makerhub.presentation.ui
 
-import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -12,6 +12,8 @@ import com.example.makerhub.R
 import com.example.makerhub.common.IResult
 import com.example.makerhub.databinding.ActivityMainBinding
 import com.example.makerhub.di.component.ComponentHolder
+import com.example.makerhub.presentation.ui.itemlist.ItemListActivity
+import com.example.makerhub.presentation.ui.report.ReportActivity
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -68,19 +70,15 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
         binding.viewReportButton.setOnClickListener {
-            showReport(report)
+            val intent = Intent(this, ReportActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.viewItemsButton.setOnClickListener {
+            val intent = Intent(this, ItemListActivity::class.java)
+            startActivity(intent)
         }
     }
-
-    private fun showReport(reportLog: String) {
-        AlertDialog.Builder(this).apply {
-            setMessage(reportLog)
-            setPositiveButton("OK") { dialog, id ->
-                dialog.dismiss()
-                binding.viewReportButton.isEnabled = false
-            }
-        }.create().show()
-    }
-
 }

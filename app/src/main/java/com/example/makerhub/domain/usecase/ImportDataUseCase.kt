@@ -21,6 +21,8 @@ class ImportDataUseCase @Inject constructor(
         private const val TAG = "ImportDataUseCase"
     }
 
+    private var report = ""
+
     suspend operator fun invoke( isInit: Boolean = true): IResult<String> {
         return try {
             val reportLog = mutableListOf<String>()
@@ -43,8 +45,10 @@ class ImportDataUseCase @Inject constructor(
                     reportLog.add("Imported $itemCount new items")
                     reportLog.add("Imported $borrowerCount new borrowers")
                     reportLog.add("Imported $checkoutCount new checkouts")
+                    reportLog.add("Import finished at ${System.currentTimeMillis()}")
 
                     val log = reportLog.joinToString("\n")
+                    setReport(log)
                     Log.i(TAG, log)
                     IResult.Success(log)
                 }
@@ -55,23 +59,22 @@ class ImportDataUseCase @Inject constructor(
         }
     }
 
+    fun setReport(report: String) {
+        this.report = report
+    }
+
+    fun getReport(): String {
+        return report
+    }
+
     private suspend fun saveItems(items: List<ItemResponse>, report: MutableList<String>): Int {
         var count = 0
         items.forEach { itemResponse ->
             val msg = try {
-                itemResponse.validateFields()
-                val rowId = local.saveItem(
-                    ItemEntity.from(
-                        itemResponse.id,
-                        itemResponse.name!!,
-                        itemResponse.category!!,
-                        itemResponse.status!!,
-                        itemResponse.updatedAt!!
-                    )
-                )
+                val rowId = local.saveItem(itemResponse)
                 if (rowId != -1L) {
                     count += 1
-                    "Successfully saved Item ${itemResponse.id}"
+                    "Saved Item ${itemResponse.id}"
                 } else {
                     "Skipped Item ${itemResponse.id}, id exists"
                 }
@@ -87,19 +90,10 @@ class ImportDataUseCase @Inject constructor(
         var count = 0
         borrowers.forEach { borrowerResponse ->
             val msg = try {
-                borrowerResponse.validateFields()
-                val rowId = local.saveBorrower(
-                    BorrowerEntity.from(
-                        borrowerResponse.id!!,
-                        borrowerResponse.name!!,
-                        borrowerResponse.email!!,
-                        borrowerResponse.joinedAt!!,
-                        borrowerResponse.updatedAt
-                    )
-                )
+                val rowId = local.saveBorrower(borrowerResponse)
                 if (rowId != -1L) {
                     count += 1
-                    "Successfully saved Borrower ${borrowerResponse.id}"
+                    "Saved Borrower ${borrowerResponse.id}"
                 } else {
                     "Skipped Borrower ${borrowerResponse.id}, id exists"
                 }
@@ -115,22 +109,10 @@ class ImportDataUseCase @Inject constructor(
         var count = 0
         checkouts.forEach { checkoutResponse ->
             val msg = try {
-                checkoutResponse.validateFields()
-                val rowId = local.saveCheckout(
-                    CheckoutEntity.from(
-                        checkoutResponse.id!!,
-                        checkoutResponse.itemId!!,
-                        checkoutResponse.borrowerId!!,
-                        checkoutResponse.status!!,
-                        checkoutResponse.checkedOutAt!!,
-                        checkoutResponse.dueAt!!,
-                        checkoutResponse.returnedAt,
-                        checkoutResponse.updatedAt!!
-                    )
-                )
+                val rowId = local.saveCheckout(checkoutResponse)
                 if (rowId != -1L) {
                     count += 1
-                    "Successfully saved Checkout ${checkoutResponse.id}"
+                    "Saved Checkout ${checkoutResponse.id}"
                 } else {
                     "Skipped Checkout ${checkoutResponse.id}, id exists"
                 }
@@ -140,44 +122,6 @@ class ImportDataUseCase @Inject constructor(
             report.add(msg)
         }
         return count
-    }
-
-    // if missing fields is empty, save the item, else report
-    private fun ItemResponse.validateFields() {
-        val missingFields = mutableListOf<String>()
-        this.let {
-            if (it.id == null) missingFields.add("id")
-            if (it.name.isNullOrEmpty()) missingFields.add("name")
-            if (it.category.isNullOrEmpty()) missingFields.add("category")
-            if (it.status.isNullOrEmpty()) missingFields.add("status")
-            if (it.updatedAt.isNullOrEmpty()) missingFields.add("updated_at")
-        }
-        if (missingFields.isNotEmpty()) throw Exception("Item $id has missing fields $missingFields")
-    }
-
-    private fun BorrowerResponse.validateFields() {
-        val missingFields = mutableListOf<String>()
-        this.let {
-            if (it.id.isNullOrEmpty()) missingFields.add("id")
-            if (it.name.isNullOrEmpty()) missingFields.add("name")
-            if (it.email.isNullOrEmpty()) missingFields.add("email")
-            if (it.joinedAt.isNullOrEmpty()) missingFields.add("joined_at")
-        }
-        if (missingFields.isNotEmpty()) throw Exception("Borrower $id has missing fields $missingFields")
-    }
-
-    private fun CheckoutResponse.validateFields() {
-        val missingFields = mutableListOf<String>()
-        this.let {
-            if (it.id.isNullOrEmpty()) missingFields.add("id")
-            if (it.itemId == null) missingFields.add("item_id")
-            if (it.borrowerId.isNullOrEmpty()) missingFields.add("borrower_id")
-            if (it.status.isNullOrEmpty()) missingFields.add("status")
-            if (it.checkedOutAt.isNullOrEmpty()) missingFields.add("checked_out_at")
-            if (it.dueAt.isNullOrEmpty()) missingFields.add("returned_at")
-            if (it.updatedAt.isNullOrEmpty()) missingFields.add("updated_at")
-        }
-        if (missingFields.isNotEmpty()) throw Exception("Checkout $id has missing fields $missingFields")
     }
 
 }

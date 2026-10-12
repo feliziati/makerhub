@@ -1,5 +1,6 @@
 package com.example.makerhub.domain.model
 
+import com.example.makerhub.common.CheckoutStatus
 import com.example.makerhub.data.local.entity.CheckoutEntity
 
 data class Checkout(
@@ -12,10 +13,6 @@ data class Checkout(
     val returnedAt: Long?,
     val updatedAt: Long
 )
-
-enum class CheckoutStatus {
-    ACTIVE, RETURNED, LOST
-}
 
 fun CheckoutEntity.toCheckout(item: Item, borrower: Borrower): Checkout {
     val checkoutStatus = parseCheckoutStatus(status)

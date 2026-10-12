@@ -2,4 +2,22 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Status Background Colors -->
+    <color name="status_available_bg">#E8F5E9</color>
+    <color name="status_on_loan_bg">#E3F2FD</color>
+    <color name="status_returned_bg">#E8F5E9</color>
+    <color name="status_active_bg">#E3F2FD</color>
+    <color name="status_lost_bg">#FFEBEE</color>
+    <color name="status_retired_bg">#EEEEEE</color>
+    <color name="status_default_bg">#F5F5F5</color>
+
+    <!-- Status Text Colors -->
+    <color name="status_available_text">#2E7D32</color>
+    <color name="status_on_loan_text">#1565C0</color>
+    <color name="status_returned_text">#2E7D32</color>
+    <color name="status_active_text">#1565C0</color>
+    <color name="status_lost_text">#C62828</color>
+    <color name="status_retired_text">#616161</color>
+    <color name="status_default_text">#757575</color>
 </resources>

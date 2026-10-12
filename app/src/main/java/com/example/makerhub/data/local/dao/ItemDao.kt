@@ -29,11 +29,10 @@ interface ItemDao {
         } else {
             if (item.updatedAt > existing.updatedAt) {
                 val oldStatus = parseItemStatus(existing.status)
-                if (oldStatus != newStatus && !isItemStatusValid(oldStatus, newStatus)) {
+                if (!isItemStatusValid(oldStatus, newStatus)) {
                     throw IllegalArgumentException("Cannot transition Item ${item.id} from $oldStatus to $newStatus")
                 }
-                update(item)
-                item.id.toLong()
+                update(item).toLong()
             } else {
                 -1L
             }
@@ -46,7 +45,7 @@ interface ItemDao {
     }
 
     @Update
-    suspend fun update(item: ItemEntity)
+    suspend fun update(item: ItemEntity): Int
 
     @Delete
     suspend fun delete(item: ItemEntity)
