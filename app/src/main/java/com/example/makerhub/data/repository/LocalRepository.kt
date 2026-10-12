@@ -27,6 +27,7 @@ interface LocalRepository {
     suspend fun getItemById(id: Int): ItemEntity?
     fun getItemByIdLiveData(id: Int): LiveData<ItemEntity?>
     fun getAllItems(): LiveData<List<ItemEntity>>
+    suspend fun getAllItemsSync(): List<ItemEntity>
     fun getItemsByStatus(status: String): LiveData<List<ItemEntity>>
 
     // Borrower queries

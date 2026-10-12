@@ -24,3 +24,11 @@ fun isCheckoutStatusValid(oldStatus: CheckoutStatus, newStatus: CheckoutStatus):
         CheckoutStatus.LOST -> false
     }
 }
+
+fun CheckoutStatus.toImpliedItemStatus(): ItemStatus {
+    return when (this) {
+        CheckoutStatus.ACTIVE -> ItemStatus.ON_LOAN
+        CheckoutStatus.RETURNED -> ItemStatus.AVAILABLE
+        CheckoutStatus.LOST -> ItemStatus.LOST
+    }
+}

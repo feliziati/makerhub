@@ -2,6 +2,8 @@ package com.example.makerhub.domain.usecase
 
 import android.util.Log
 import com.example.makerhub.common.IResult
+import com.example.makerhub.data.local.entity.CheckoutEntity
+import com.example.makerhub.data.local.entity.ItemEntity
 import com.example.makerhub.data.remote.response.BorrowerResponse
 import com.example.makerhub.data.remote.response.CheckoutResponse
 import com.example.makerhub.data.remote.response.ItemResponse
@@ -293,5 +295,65 @@ class ImportDataUseCaseTest {
         assertTrue(result is IResult.Success)
         val report = (result as IResult.Success).data
         assertTrue(report.contains(errorMessage))
+    }
+
+    @Test
+    fun `when checkout event updated_at is later than item updated_at checkout wins and conflict is reported`() = runTest {
+        val ledgerData = LedgerDataResponse(
+            items = listOf(
+                ItemResponse(id = 1, name = "Drill", category = "tool", status = "available", updatedAt = "2026-01-01T00:00:00Z")
+            ),
+            borrowers = emptyList(),
+            checkouts = listOf(
+                CheckoutResponse(id = "c1", itemId = 1, borrowerId = "b1", status = "active", checkedOutAt = "2026-01-02T00:00:00Z", dueAt = "2026-01-09T00:00:00Z", updatedAt = "2026-01-02T00:00:00Z")
+            )
+        )
+        coEvery { dataSourceRepository.importInitialData() } returns IResult.Success(ledgerData)
+        coEvery { localRepository.saveItem(any<ItemResponse>()) } returns 1L
+        coEvery { localRepository.saveCheckout(any<CheckoutResponse>()) } returns 1L
+
+        val itemEntity = ItemEntity(1, "Drill", "tool", "available", 1000L)
+        val checkoutEntity = CheckoutEntity("c1", 1, "b1", "active", 2000L, 3000L, null, 2000L)
+
+        coEvery { localRepository.getAllItemsSync() } returns listOf(itemEntity)
+        coEvery { localRepository.getCheckoutsByItemSync(1) } returns listOf(checkoutEntity)
+
+        importDataUseCase = ImportDataUseCase(dataSourceRepository, localRepository)
+        val result = importDataUseCase(isInit = true)
+
+        assertTrue(result is IResult.Success)
+        val report = (result as IResult.Success).data
+        assertTrue(report.contains("Conflict detected for Item 1"))
+        assertTrue(report.contains("Checkout updated_at wins"))
+    }
+
+    @Test
+    fun `when item updated_at is later than checkout event updated_at item wins and conflict is reported`() = runTest {
+        val ledgerData = LedgerDataResponse(
+            items = listOf(
+                ItemResponse(id = 1, name = "Drill", category = "tool", status = "available", updatedAt = "2026-01-05T00:00:00Z")
+            ),
+            borrowers = emptyList(),
+            checkouts = listOf(
+                CheckoutResponse(id = "c1", itemId = 1, borrowerId = "b1", status = "active", checkedOutAt = "2026-01-02T00:00:00Z", dueAt = "2026-01-09T00:00:00Z", updatedAt = "2026-01-02T00:00:00Z")
+            )
+        )
+        coEvery { dataSourceRepository.importInitialData() } returns IResult.Success(ledgerData)
+        coEvery { localRepository.saveItem(any<ItemResponse>()) } returns 1L
+        coEvery { localRepository.saveCheckout(any<CheckoutResponse>()) } returns 1L
+
+        val itemEntity = ItemEntity(1, "Drill", "tool", "available", 5000L)
+        val checkoutEntity = CheckoutEntity("c1", 1, "b1", "active", 2000L, 3000L, null, 2000L)
+
+        coEvery { localRepository.getAllItemsSync() } returns listOf(itemEntity)
+        coEvery { localRepository.getCheckoutsByItemSync(1) } returns listOf(checkoutEntity)
+
+        importDataUseCase = ImportDataUseCase(dataSourceRepository, localRepository)
+        val result = importDataUseCase(isInit = true)
+
+        assertTrue(result is IResult.Success)
+        val report = (result as IResult.Success).data
+        assertTrue(report.contains("Conflict detected for Item 1"))
+        assertTrue(report.contains("Item updated_at wins"))
     }
 }

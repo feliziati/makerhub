@@ -59,6 +59,9 @@ interface ItemDao {
     @Query("SELECT * FROM items")
     fun getAllItems(): LiveData<List<ItemEntity>>
 
+    @Query("SELECT * FROM items")
+    suspend fun getAllItemsSync(): List<ItemEntity>
+
     @Query("SELECT * FROM items WHERE status = :status")
     fun getItemsByStatus(status: String): LiveData<List<ItemEntity>>
 }

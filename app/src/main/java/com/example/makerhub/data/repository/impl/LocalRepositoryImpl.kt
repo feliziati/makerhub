@@ -97,6 +97,8 @@ class LocalRepositoryImpl @Inject constructor(
 
     override fun getAllItems(): LiveData<List<ItemEntity>> = itemDao.getAllItems()
 
+    override suspend fun getAllItemsSync(): List<ItemEntity> = itemDao.getAllItemsSync()
+
     override fun getItemsByStatus(status: String): LiveData<List<ItemEntity>> = itemDao.getItemsByStatus(status)
 
     override suspend fun getBorrowerById(id: String): BorrowerEntity? = borrowerDao.getBorrowerById(id)

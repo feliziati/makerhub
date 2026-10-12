@@ -2,14 +2,15 @@ package com.example.makerhub.domain.usecase
 
 import android.util.Log
 import com.example.makerhub.common.IResult
-import com.example.makerhub.data.local.entity.BorrowerEntity
-import com.example.makerhub.data.local.entity.CheckoutEntity
-import com.example.makerhub.data.local.entity.ItemEntity
+import com.example.makerhub.common.toImpliedItemStatus
 import com.example.makerhub.data.remote.response.BorrowerResponse
 import com.example.makerhub.data.remote.response.CheckoutResponse
 import com.example.makerhub.data.remote.response.ItemResponse
 import com.example.makerhub.data.repository.DataSourceRepository
 import com.example.makerhub.data.repository.LocalRepository
+import com.example.makerhub.domain.model.parseCheckoutStatus
+import com.example.makerhub.domain.model.parseItemStatus
+import com.example.makerhub.domain.model.toEntityString
 import javax.inject.Inject
 import kotlin.collections.forEach
 
@@ -41,6 +42,8 @@ class ImportDataUseCase @Inject constructor(
                     val itemCount = data.items?.let { saveItems(it, reportLog) }
                     val borrowerCount = data.borrowers?.let { saveBorrowers(it, reportLog) }
                     val checkoutCount = data.checkouts?.let { saveCheckout(it, reportLog) }
+
+                    reconcileConflicts(reportLog)
 
                     reportLog.add("Imported $itemCount new items")
                     reportLog.add("Imported $borrowerCount new borrowers")
@@ -122,6 +125,51 @@ class ImportDataUseCase @Inject constructor(
             report.add(msg)
         }
         return count
+    }
+
+    /*1. When the Checkout event wins (checkout.updatedAt > item.updatedAt):
+    ◦The Item record is updated in place: its status field is modified to match the state implied by the checkout event (impliedItemStatus), and its updatedAt timestamp is updated to match the checkout's timestamp.
+    ◦ The Checkout event record remains untouched in the database as part of the item's loan history.
+    2.  When the Item record wins (item.updatedAt >= checkout.updatedAt):
+    ◦The Item record retains its status and timestamp.
+    ◦   The Checkout record remains intact in the database as historical data. */
+    private suspend fun reconcileConflicts(reportLog: MutableList<String>) {
+        val items = local.getAllItemsSync()
+        items.forEach { itemEntity ->
+            val itemStatus = try {
+                parseItemStatus(itemEntity.status)
+            } catch (e: Exception) {
+                return@forEach
+            }
+
+            val checkouts = local.getCheckoutsByItemSync(itemEntity.id)
+            if (checkouts.isNotEmpty()) {
+                val latestCheckout = checkouts.maxByOrNull { it.updatedAt } ?: return@forEach
+                val checkoutStatus = try {
+                    parseCheckoutStatus(latestCheckout.status)
+                } catch (e: Exception) {
+                    return@forEach
+                }
+                val impliedItemStatus = checkoutStatus.toImpliedItemStatus()
+
+                if (itemStatus != impliedItemStatus) {
+                    if (latestCheckout.updatedAt > itemEntity.updatedAt) {
+                        val updatedItemEntity = itemEntity.copy(
+                            status = impliedItemStatus.toEntityString(),
+                            updatedAt = latestCheckout.updatedAt
+                        )
+                        try {
+                            local.saveItem(updatedItemEntity)
+                            reportLog.add("Conflict detected for Item ${itemEntity.id}: Item status '$itemStatus' (${itemEntity.updatedAt}) vs Checkout ${latestCheckout.id} status '$checkoutStatus' (${latestCheckout.updatedAt}). Checkout updated_at wins: Item status updated to $impliedItemStatus.")
+                        } catch (e: Exception) {
+                            reportLog.add("Skipped Item ${itemEntity.id}, Reason: ${e.message}")
+                        }
+                    } else {
+                        reportLog.add("Conflict detected for Item ${itemEntity.id}: Item status '$itemStatus' (${itemEntity.updatedAt}) vs Checkout ${latestCheckout.id} status '$checkoutStatus' (${latestCheckout.updatedAt}). Item updated_at wins: Retained Item status as $itemStatus.")
+                    }
+                }
+            }
+        }
     }
 
 }
